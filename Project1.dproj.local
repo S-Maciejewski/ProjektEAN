@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BorlandProject>
+	<Transactions>
+    <Transaction>1899.12.30 00:00:00.000.619,C:\Users\Michał\Desktop\Semestr IV\EAN\Projekt2\Main.dfm=C:\Users\Michał\Desktop\Semestr IV\EAN\Projekt2\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.405,=C:\Users\Michał\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.204,C:\Users\Michał\Desktop\EAN\Projekt\Unit1.pas=C:\Users\Michał\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.204,C:\Users\Michał\Desktop\EAN\Projekt\Unit1.dfm=C:\Users\Michał\Documents\Embarcadero\Studio\Projects\Unit1.dfm</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.453,=C:\Users\Michał\Desktop\Semestr IV\EAN\Projekt2\IntervalArithmetic32and64.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.619,C:\Users\Michał\Desktop\Semestr IV\EAN\Projekt2\Main.pas=C:\Users\Michał\Desktop\Semestr IV\EAN\Projekt2\Unit1.pas</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.362,C:\Users\Michał\Desktop\EAN\Projekt\Project1.dproj=C:\Users\Michał\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>1899.12.30 00:00:00.000.510,=C:\Users\Michał\Desktop\Semestr IV\EAN\Projekt2\IntervalArithmetic.pas</Transaction>
+  </Transactions>
+</BorlandProject>
