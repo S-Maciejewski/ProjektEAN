@@ -1,11 +1,9 @@
 object Form1: TForm1
   Left = 0
   Top = 0
-  Caption = 
-    'Obliczanie warto'#347'ci i wsp'#243#322'czynnik'#243'w funkcji sklejanej stopnia t' +
-    'rzeciego z warto'#347'ciami jej pochodnej na kra'#324'cach przedzia'#322'u'
-  ClientHeight = 310
-  ClientWidth = 785
+  Caption = 'Kalkulator funkcji sklejanych'
+  ClientHeight = 342
+  ClientWidth = 681
   Color = 16772817
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -30,9 +28,9 @@ object Form1: TForm1
     ParentFont = False
   end
   object Label2: TLabel
-    Left = 235
-    Top = 176
-    Width = 6
+    Left = 127
+    Top = 168
+    Width = 17
     Height = 22
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -42,8 +40,8 @@ object Form1: TForm1
     ParentFont = False
   end
   object Label5: TLabel
-    Left = 488
-    Top = 120
+    Left = 184
+    Top = 24
     Width = 265
     Height = 22
     Caption = 'Arytmetka przedzia'#322'owa w'#322#261'czona'
@@ -56,8 +54,8 @@ object Form1: TForm1
     Visible = False
   end
   object Label3: TLabel
-    Left = 152
-    Top = 176
+    Left = 64
+    Top = 168
     Width = 57
     Height = 25
     Caption = 'Wynik:'
@@ -98,7 +96,7 @@ object Form1: TForm1
     TabOrder = 1
   end
   object CheckBox1: TCheckBox
-    Left = 152
+    Left = 163
     Top = 83
     Width = 286
     Height = 23
@@ -120,7 +118,7 @@ object Form1: TForm1
     Visible = False
   end
   object CheckBox2: TCheckBox
-    Left = 152
+    Left = 163
     Top = 120
     Width = 286
     Height = 17

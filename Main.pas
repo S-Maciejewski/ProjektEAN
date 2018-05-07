@@ -440,6 +440,10 @@ var i,k        : Integer;
     b          : vector1;
     c          : vector2;
 begin
+SetLength(b,n);
+SetLength(c,n);
+SetLength(d,n);
+
   if n<1
     then st:=1
     else begin
@@ -554,6 +558,9 @@ var i,k   : Integer;
     b     : vector1;
     c     : vector2;
 begin
+SetLength(b,n);
+SetLength(c,n);
+SetLength(d,n);
   if n<1
     then st:=1
     else if (xx<x[0]) or (xx>x[n])
@@ -637,6 +644,7 @@ procedure TForm1.Button1Click(Sender: TObject);
 begin
  if CheckBox1.State = cbUnchecked then
   begin
+    Button1.Caption := 'Dalej';
     CheckBox1.Enabled := False;
     CheckBox1.Caption := 'Arytmetyka przedzia³owa wy³¹czona';
     Label2.Caption := '';
@@ -664,7 +672,6 @@ begin
       f[(inputNumber-1)mod (n+1)] := strToFloat(Edit1.Text);
       if inputNumber = 2*(n+1) then
       begin
-        //Label1.Caption := 'xx';
         Label1.Caption := 'f1x0';
       end
       else Label1.Caption := 'f[' + intToStr((inputNumber)mod (n+1)) +']'
@@ -674,6 +681,12 @@ begin
     begin
        f1x0 := strToFloat(Edit1.Text);
        Label1.Caption := 'f1xn';
+       if CheckBox2.State = cbUnchecked then
+      begin
+        CheckBox2.Enabled := False;
+        CheckBox2.Caption := 'Obliczanie wartoœci';
+        Button1.Caption := 'Oblicz';
+      end;
     end
     else if inputNumber = 2*(n+1)+2 then
     begin
@@ -683,6 +696,7 @@ begin
         CheckBox2.Enabled := False;
         CheckBox2.Caption := 'Obliczanie wartoœci';
         Label1.Caption := 'xx';
+        Button1.Caption := 'Oblicz';
       end
       else
       begin
@@ -701,19 +715,16 @@ begin
           end;
         Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
         Str(Wynik,tmp);
-
-        Label2.Caption := Label2.Caption + 'Wynik = ' + tmp;
         end
-      else  Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
+      else  Label2.Caption := 'Nie mo¿na obliczyæ wartoœci - b³¹d st = ' + IntToStr(st);
       end;
 
     end
-          //Tu skoñczy³em, TODO checkbox z wyborem funkcji
+
+
     else if inputNumber = 2*(n+1)+3 then
     begin
       xx := strToFloat(Edit1.Text);
-      //periodsplinecoeffns(n, x, f, a, st);
-      //Wynik := periodsplinevalue(n, x, f, xx, st);
       Wynik := clampedsplinevalue(n, x, f, f1x0, f1xn, xx, st);
       inputNumber := -1;
       Label1.Caption := 'n';
@@ -726,7 +737,7 @@ begin
 
         Label2.Caption := Label2.Caption + 'Wynik = ' + tmp;
       end
-      else  Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
+      else  Label2.Caption := 'Nie mo¿na obliczyæ wartoœci - b³¹d st = ' + IntToStr(st);
       end;
 
     inputNumber := inputNumber + 1;
