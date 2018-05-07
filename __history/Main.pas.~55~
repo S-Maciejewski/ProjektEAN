@@ -20,6 +20,9 @@ type
     CheckBox2: TCheckBox;
 
     procedure Button1Click(Sender: TObject);
+    procedure Splitter1CanResize(Sender: TObject; var NewSize: Integer;
+      var Accept: Boolean);
+
 
   private
     { Private declarations }
@@ -51,7 +54,7 @@ var
   i: Integer;
   j: Integer;
   f1x0: Extended;
-  f1xn: Extended;
+  f1x1: Extended;
   xx: Extended;
   Wynik: Extended;
 
@@ -78,6 +81,10 @@ implementation
 
 {$R *.dfm}
 
+procedure periodsplinecoeffns (n         : Integer;
+                               x,f       : vector;
+                               var a     : matrix;
+                               var st    : Integer);
 {---------------------------------------------------------------------------}
 {                                                                           }
 {  The procedure periodsplinecoeffns calculates the coefficients of the     }
@@ -115,6 +122,116 @@ implementation
 {              q0<=0 and qn1>=n-1.                                          }
 {                                                                           }
 {---------------------------------------------------------------------------}
+var i,k        : Integer;
+    w,v,y,z,xi : Extended;
+    u          : vector;
+    b,c,d      : vector1;
+    p          : vector2;
+    q          : vector3;
+begin
+SetLength(b,n);
+SetLength(c,n);
+SetLength(d,n);
+SetLength(u,n);
+SetLength(p,n);
+SetLength(q,n);
+  if n<1
+    then st:=1
+    else if f[0]<>f[n]
+           then st:=3
+           else begin
+                  st:=0;
+                  i:=-1;
+                  repeat
+                    i:=i+1;
+                    for k:=i+1 to n do
+                      if x[i]=x[k]
+                        then st:=2
+                  until (i=n-1) or (st=2)
+                end;
+  if st=0
+    then begin
+           if n>1
+             then begin
+                    v:=x[1]-x[0];
+                    z:=x[n]-x[n-1];
+                    b[n]:=v/(z+v);
+                    c[n]:=1-b[n];
+                    y:=f[n];
+                    d[n]:=6*((f[1]-y)/v-(y-f[n-1])/z)/(z+v);
+                    for i:=1 to n-1 do
+                      begin
+                        z:=x[i];
+                        y:=x[i+1]-z;
+                        z:=z-x[i-1];
+                        v:=f[i];
+                        b[i]:=y/(y+z);
+                        c[i]:=1-b[i];
+                        d[i]:=6*((f[i+1]-v)/y-(v-f[i-1])/z)/(y+z)
+                      end;
+                    if n>2
+                      then begin
+                             u[1]:=2;
+                             c[2]:=c[2]/2;
+                             q[2]:=-b[n]/2;
+                             for i:=2 to n-2 do
+                               begin
+                                 v:=2-b[i-1]*c[i];
+                                 c[i+1]:=c[i+1]/v;
+                                 q[i+1]:=-q[i]*b[i-1]/v;
+                                 u[i]:=v
+                               end;
+                             v:=2-c[n-1]*b[n-2];
+                             q[n]:=(c[n]-q[n-1]*b[n-2])/v;
+                             u[n-1]:=v;
+                             p[1]:=c[1];
+                             for i:=2 to n-2 do
+                               p[i]:=-c[i]*p[i-1];
+                             p[n-1]:=b[n-1]-c[n-1]*p[n-2];
+                             v:=2-c[1]*p[2];
+                             for i:=2 to n-2 do
+                               v:=v-p[i]*p[i+1];
+                             u[n]:=v-p[n-1]*q[n];
+                             for i:=2 to n-1 do
+                               d[i]:=d[i]-c[i]*d[i-1];
+                             v:=d[n];
+                             for i:=2 to n do
+                               v:=v-q[i]*d[i-1];
+                             d[n]:=v;
+                             u[n]:=d[n]/u[n];
+                             u[n-1]:=(d[n-1]-p[n-1]*u[n])/u[n-1];
+                             for i:=n-2 downto 1 do
+                               u[i]:=(d[i]-b[i]*u[i+1]-p[i]*u[n])/u[i]
+                           end
+                      else begin
+                             y:=d[1];
+                             z:=d[2];
+                             w:=4-c[2]*b[1];
+                             u[1]:=(2*y-b[1]*z)/w;
+                             u[2]:=(2*z-c[2]*y)/w;
+                           end
+                  end
+             else u[1]:=0;
+           u[0]:=u[n];
+           for i:=0 to n-1 do
+             begin
+               w:=f[i];
+               xi:=x[i];
+               z:=x[i+1]-xi;
+               y:=u[i];
+               v:=(f[i+1]-w)/z-(2*y+u[i+1])*z/6;
+               z:=(u[i+1]-y)/(6*z);
+               y:=y/2;
+               a[0,i]:=((-z*xi+y)*xi-v)*xi+w;
+               w:=3*z*xi;
+               a[1,i]:=(w-2*y)*xi+v;
+               a[2,i]:=y-w;
+               a[3,i]:=z
+             end
+         end
+end;
+
+
 procedure intervalperiodsplinecoeffns (n         : Integer;
                                x,f       : Ivector;
                                var a     : Imatrix;
@@ -229,6 +346,12 @@ SetLength(q,n);
          end
 end;
 
+
+
+function periodsplinevalue (n      : Integer;
+                            x,f    : vector;
+                            xx     : Extended;
+                            var st : Integer) : Extended;
 {---------------------------------------------------------------------------}
 {                                                                           }
 {  The function periodsplinevalue calculates the value of the periodic      }
@@ -265,6 +388,124 @@ end;
 {              and qn>=n.                                                   }
 {                                                                           }
 {---------------------------------------------------------------------------}
+var i,k   : Integer;
+    v,y,z : Extended;
+    found : Boolean;
+    a     : array [0..3] of Extended;
+    u     : vector;
+    b,c,d : vector1;
+    p     : vector2;
+    q     : vector3;
+begin
+SetLength(b,n);
+SetLength(c,n);
+SetLength(d,n);
+SetLength(u,n);
+SetLength(p,n);
+SetLength(q,n);
+  if n<1
+    then st:=1
+    else if f[0]<>f[n]
+           then st:=3
+           else if (xx<x[0]) or (xx>x[n])
+                  then st:=4
+                  else begin
+                         st:=0;
+                         i:=-1;
+                         repeat
+                           i:=i+1;
+                           for k:=i+1 to n do
+                             if x[i]=x[k]
+                               then st:=2
+                         until (i=n-1) or (st=2)
+                       end;
+  if st=0
+    then begin
+           if n>1
+             then begin
+                    v:=x[1]-x[0];
+                    z:=x[n]-x[n-1];
+                    b[n]:=v/(z+v);
+                    c[n]:=1-b[n];
+                    y:=f[n];
+                    d[n]:=6*((f[1]-y)/v-(y-f[n-1])/z)/(z+v);
+                    for i:=1 to n-1 do
+                      begin
+                        z:=x[i];
+                        y:=x[i+1]-z;
+                        z:=z-x[i-1];
+                        v:=f[i];
+                        b[i]:=y/(y+z);
+                        c[i]:=1-b[i];
+                        d[i]:=6*((f[i+1]-v)/y-(v-f[i-1])/z)/(y+z)
+                      end;
+                    if n>2
+                      then begin
+                             u[1]:=2;
+                             c[2]:=c[2]/2;
+                             q[2]:=-b[n]/2;
+                             for i:=2 to n-2 do
+                               begin
+                                 v:=2-b[i-1]*c[i];
+                                 c[i+1]:=c[i+1]/v;
+                                 q[i+1]:=-q[i]*b[i-1]/v;
+                                 u[i]:=v
+                               end;
+                             v:=2-c[n-1]*b[n-2];
+                             q[n]:=(c[n]-q[n-1]*b[n-2])/v;
+                             u[n-1]:=v;
+                             p[1]:=c[1];
+                             for i:=2 to n-2 do
+                               p[i]:=-c[i]*p[i-1];
+                             p[n-1]:=b[n-1]-c[n-1]*p[n-2];
+                             v:=2-c[1]*p[2];
+                             for i:=2 to n-2 do
+                               v:=v-p[i]*p[i+1];
+                             u[n]:=v-p[n-1]*q[n];
+                             for i:=2 to n-1 do
+                               d[i]:=d[i]-c[i]*d[i-1];
+                             v:=d[n];
+                             for i:=2 to n do
+                               v:=v-q[i]*d[i-1];
+                             d[n]:=v;
+                             u[n]:=d[n]/u[n];
+                             u[n-1]:=(d[n-1]-p[n-1]*u[n])/u[n-1];
+                             for i:=n-2 downto 1 do
+                               u[i]:=(d[i]-b[i]*u[i+1]-p[i]*u[n])/u[i]
+                           end
+                      else begin
+                             y:=d[1];
+                             z:=d[2];
+                             v:=4-c[2]*b[1];
+                             u[1]:=(2*y-b[1]*z)/v;
+                             u[2]:=(2*z-c[2]*y)/v;
+                           end
+                  end
+             else u[1]:=0;
+           u[0]:=u[n];
+           found:=False;
+           i:=-1;
+           repeat
+             i:=i+1;
+             if (xx>=x[i]) and (xx<=x[i+1])
+               then found:=True
+           until found;
+           y:=x[i+1]-x[i];
+           z:=u[i+1];
+           v:=u[i];
+           a[0]:=f[i];
+           a[1]:=(f[i+1]-f[i])/y-(2*v+z)*y/6;
+           a[2]:=v/2;
+           a[3]:=(z-v)/(6*y);
+           y:=a[3];
+           z:=xx-x[i];
+           for i:=2 downto 0 do
+             y:=y*z+a[i];
+           periodsplinevalue:=y
+         end
+end;
+
+
 function intervalperiodsplinevalue (n      : Integer;
                             x,f    : Ivector;
                             xx     : interval;
@@ -673,60 +914,38 @@ begin
     else if inputNumber = 2*(n+1)+1 then
     begin
        f1x0 := strToFloat(Edit1.Text);
-       Label1.Caption := 'f1xn';
+       Label1.Caption := 'f1x1';
     end
     else if inputNumber = 2*(n+1)+2 then
     begin
-      f1xn := strToFloat(Edit1.Text);
-      if CheckBox2.State = cbUnchecked then
+     f1x1 := strToFloat(Edit1.Text);
+     Label1.Caption := 'xx';
+    end;
+
       begin
-        CheckBox2.Enabled := False;
-        CheckBox2.Caption := 'Obliczanie wartoœci';
-        Label1.Caption := 'xx';
-      end
-      else
-      begin
+        xx := strToFloat(Edit1.Text);
+        periodsplinecoeffns(n, x, f, a, st);
+        Wynik := periodsplinevalue(n, x, f, xx, st);
         inputNumber := -1;
         Label1.Caption := 'n';
-        clampedsplinecoeffns(n, x, f, f1x0, f1xn, a, st);
+        CheckBox1.Enabled := True;
         if st = 0 then
         begin
-        for j := 0 to n-1 do
-          for i:=0 to 3 do
-          begin
-            Str(a[i][j],tmp);
-            if i mod 2 = 0 then
-              Label2.Caption := Label2.Caption + 'a[' + IntToStr(i) + ', ' + IntToStr(j) + '] = ' + tmp + '     '
-            else Label2.Caption := Label2.Caption + 'a[' + IntToStr(i) + ', ' + IntToStr(j) + '] = ' + tmp + #10+#13
-          end;
-        Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
-        Str(Wynik,tmp);
+          for j := 0 to n-1 do
+            for i:=0 to 3 do
+            begin
+              Str(a[i][j],tmp);
+              if i mod 2 = 0 then
+                Label2.Caption := Label2.Caption + 'a[' + IntToStr(i) + ', ' + IntToStr(j) + '] = ' + tmp + '     '
+              else Label2.Caption := Label2.Caption + 'a[' + IntToStr(i) + ', ' + IntToStr(j) + '] = ' + tmp + #10+#13
+            end;
+          Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
+          Str(Wynik,tmp);
 
-        Label2.Caption := Label2.Caption + 'Wynik = ' + tmp;
+          Label2.Caption := Label2.Caption + 'Wynik = ' + tmp;
         end
-      else  Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
-      end;
+        else  Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
 
-    end
-          //Tu skoñczy³em, TODO checkbox z wyborem funkcji
-    else if inputNumber = 2*(n+1)+3 then
-    begin
-      xx := strToFloat(Edit1.Text);
-      //periodsplinecoeffns(n, x, f, a, st);
-      //Wynik := periodsplinevalue(n, x, f, xx, st);
-      Wynik := clampedsplinevalue(n, x, f, f1x0, f1xn, xx, st);
-      inputNumber := -1;
-      Label1.Caption := 'n';
-      CheckBox1.Enabled := True;
-      CheckBox2.Enabled := True;
-      if st = 0 then
-      begin
-        Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
-        Str(Wynik,tmp);
-
-        Label2.Caption := Label2.Caption + 'Wynik = ' + tmp;
-      end
-      else  Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
       end;
 
     inputNumber := inputNumber + 1;
