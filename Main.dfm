@@ -17,8 +17,8 @@ object Form1: TForm1
   object Label1: TLabel
     Left = 64
     Top = 52
-    Width = 33
-    Height = 27
+    Width = 10
+    Height = 22
     Caption = 'n'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -30,7 +30,7 @@ object Form1: TForm1
   object Label2: TLabel
     Left = 127
     Top = 168
-    Width = 17
+    Width = 6
     Height = 22
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
@@ -40,11 +40,11 @@ object Form1: TForm1
     ParentFont = False
   end
   object Label5: TLabel
-    Left = 184
+    Left = 155
     Top = 24
-    Width = 265
+    Width = 294
     Height = 22
-    Caption = 'Arytmetka przedzia'#322'owa w'#322#261'czona'
+    Caption = 'Podaj lewy i prawy kraniec przedzia'#322'u'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
     Font.Height = -18
@@ -56,8 +56,8 @@ object Form1: TForm1
   object Label3: TLabel
     Left = 64
     Top = 168
-    Width = 57
-    Height = 25
+    Width = 54
+    Height = 22
     Caption = 'Wynik:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText

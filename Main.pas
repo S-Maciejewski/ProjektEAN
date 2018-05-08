@@ -57,6 +57,8 @@ var
 
   x2: Ivector;
   f2: Ivector;
+  f1x02: interval;
+  f1xn2: interval;
   a2: Imatrix;
   xx2: interval;
   Wynik2: interval;
@@ -77,322 +79,6 @@ var
 implementation
 
 {$R *.dfm}
-
-{---------------------------------------------------------------------------}
-{                                                                           }
-{  The procedure periodsplinecoeffns calculates the coefficients of the     }
-{  periodic cubic spline interpolant for a function given by its values at  }
-{  nodes.                                                                   }
-{  Data:                                                                    }
-{    n  - number of interpolation nodes minus 1 (the nodes are numbered     }
-{         from 0 to n),                                                     }
-{    x  - an array containing the values of nodes,                          }
-{    f  - an array containing the values of function (the value of f[0]     }
-{         should be equal to the value of f[n]).                            }
-{  Result:                                                                  }
-{    a  - an array of spline coefficients (the element a[k,i] contains the  }
-{         coefficient before x^k, where k=0,1,2,3, for the interval         }
-{         <x[i], x[i+1]>; i=0,1,...,n-1).                                   }
-{  Other parameters:                                                        }
-{    st - a variable which within the procedure periodsplinecoeffns is      }
-{         assigned the value of:                                            }
-{           1, if n<1,                                                      }
-{           2, if there exist x[i] and x[j] (i<>j; i,j=0,1,...,n) such      }
-{              that x[i]=x[j],                                              }
-{           3, if f[0]<>f[n],                                               }
-{           0, otherwise.                                                   }
-{         Note: If st<>0, then the elements of array a are not calculated.  }
-{  Unlocal identifiers:                                                     }
-{    vector  - a type identifier of extended array [q0..qn], where q0<=0    }
-{              and qn>=n,                                                   }
-{    vector1 - a type identifier of extended array [q1..qn], where q1<=1    }
-{              and qn>=n,                                                   }
-{    vector2 - a type identifier of extended array [q1..qn1], where q1<=1   }
-{              and qn1>=n-1,                                                }
-{    vector3 - a type identifier of extended array [q2..qn], where q2<=2    }
-{              and qn>=n,                                                   }
-{    matrix  - a type identifier of extended array [0..3, q0..qn1], where   }
-{              q0<=0 and qn1>=n-1.                                          }
-{                                                                           }
-{---------------------------------------------------------------------------}
-procedure intervalperiodsplinecoeffns (n         : Integer;
-                               x,f       : Ivector;
-                               var a     : Imatrix;
-                               var st    : Integer);
-
-var i,k        : Integer;
-    w,v,y,z,xi : interval;
-    u          : Ivector;
-    b,c,d      : Ivector1;
-    p          : Ivector2;
-    q          : Ivector3;
-begin
-SetLength(b,n);
-SetLength(c,n);
-SetLength(d,n);
-SetLength(u,n);
-SetLength(p,n);
-SetLength(q,n);
-  if n<1
-    then st:=1
-    else if not compare_equal(f[0], f[n])
-           then st:=3
-           else begin
-                  st:=0;
-                  i:=-1;
-                  repeat
-                    i:=i+1;
-                    for k:=i+1 to n do
-                      if compare_equal(x[i], x[k])
-                        then st:=2
-                  until (i=n-1) or (st=2)
-                end;
-  if st=0
-    then begin
-           if n>1
-             then begin
-                    v:=x[1]-x[0];
-                    z:=x[n]-x[n-1];
-                    b[n]:=v/(z+v);
-                    c[n]:=1-b[n];
-                    y:=f[n];
-                    d[n]:=6*((f[1]-y)/v-(y-f[n-1])/z)/(z+v);
-                    for i:=1 to n-1 do
-                      begin
-                        z:=x[i];
-                        y:=x[i+1]-z;
-                        z:=z-x[i-1];
-                        v:=f[i];
-                        b[i]:=y/(y+z);
-                        c[i]:=1-b[i];
-                        d[i]:=6*((f[i+1]-v)/y-(v-f[i-1])/z)/(y+z)
-                      end;
-                    if n>2
-                      then begin
-                             u[1]:=2;
-                             c[2]:=c[2]/2;
-                             q[2]:=-b[n]/2;
-                             for i:=2 to n-2 do
-                               begin
-                                 v:=2-b[i-1]*c[i];
-                                 c[i+1]:=c[i+1]/v;
-                                 q[i+1]:=-q[i]*b[i-1]/v;
-                                 u[i]:=v
-                               end;
-                             v:=2-c[n-1]*b[n-2];
-                             q[n]:=(c[n]-q[n-1]*b[n-2])/v;
-                             u[n-1]:=v;
-                             p[1]:=c[1];
-                             for i:=2 to n-2 do
-                               p[i]:=-c[i]*p[i-1];
-                             p[n-1]:=b[n-1]-c[n-1]*p[n-2];
-                             v:=2-c[1]*p[2];
-                             for i:=2 to n-2 do
-                               v:=v-p[i]*p[i+1];
-                             u[n]:=v-p[n-1]*q[n];
-                             for i:=2 to n-1 do
-                               d[i]:=d[i]-c[i]*d[i-1];
-                             v:=d[n];
-                             for i:=2 to n do
-                               v:=v-q[i]*d[i-1];
-                             d[n]:=v;
-                             u[n]:=d[n]/u[n];
-                             u[n-1]:=(d[n-1]-p[n-1]*u[n])/u[n-1];
-                             for i:=n-2 downto 1 do
-                               u[i]:=(d[i]-b[i]*u[i+1]-p[i]*u[n])/u[i]
-                           end
-                      else begin
-                             y:=d[1];
-                             z:=d[2];
-                             w:=4-c[2]*b[1];
-                             u[1]:=(2*y-b[1]*z)/w;
-                             u[2]:=(2*z-c[2]*y)/w;
-                           end
-                  end
-             else u[1]:=0;
-           u[0]:=u[n];
-           for i:=0 to n-1 do
-             begin
-               w:=f[i];
-               xi:=x[i];
-               z:=x[i+1]-xi;
-               y:=u[i];
-               v:=(f[i+1]-w)/z-(2*y+u[i+1])*z/6;
-               z:=(u[i+1]-y)/(6*z);
-               y:=y/2;
-               a[0,i]:=((-z*xi+y)*xi-v)*xi+w;
-               w:=3*z*xi;
-               a[1,i]:=(w-2*y)*xi+v;
-               a[2,i]:=y-w;
-               a[3,i]:=z
-             end
-         end
-end;
-
-{---------------------------------------------------------------------------}
-{                                                                           }
-{  The function periodsplinevalue calculates the value of the periodic      }
-{  cubic spline interpolant for a function given by its values at nodes.    }
-{  Data:                                                                    }
-{    n  - number of interpolation nodes minus 1 (the nodes are numbered     }
-{         from 0 to n),                                                     }
-{    x  - an array containing the values of nodes,                          }
-{    f  - an array containing the values of function (the value of f[0]     }
-{         should be equal to the value of f[n]),                            }
-{    xx - the point at which the value of interpolating spline should       }
-{         be calculated.                                                    }
-{  Result:                                                                  }
-{    periodsplinevalue(n,x,f,xx,st) - the value of periodic spline at xx.   }
-{  Other parameters:                                                        }
-{    st - a variable which within the function periodsplinevalue is         }
-{         assigned the value of:                                            }
-{           1, if n<1,                                                      }
-{           2, if there exist x[i] and x[j] (i<>j; i,j=0,1,...,n) such      }
-{              that x[i]=x[j],                                              }
-{           3, if f[0]<>f[n],                                               }
-{           4, if xx<x[0] or xx>x[n],                                       }
-{           0, otherwise.                                                   }
-{         Note: If st<>0, then periodicsplinevalue(n,x,f,xx,st) is not      }
-{               calculated.                                                 }
-{  Unlocal identifiers:                                                     }
-{    vector  - a type identifier of extended array [q0..qn], where q0<=0    }
-{              and qn>=n,                                                   }
-{    vector1 - a type identifier of extended array [q1..qn], where q1<=1    }
-{              and qn>=n,                                                   }
-{    vector2 - a type identifier of extended array [q1..qn1], where q1<=1   }
-{              and qn1>=n-1,                                                }
-{    vector3 - a type identifier of extended array [q2..qn], where q2<=2    }
-{              and qn>=n.                                                   }
-{                                                                           }
-{---------------------------------------------------------------------------}
-function intervalperiodsplinevalue (n      : Integer;
-                            x,f    : Ivector;
-                            xx     : interval;
-                            var st : Integer) : interval;
-
-var i,k   : Integer;
-    v,y,z : interval;
-    found : Boolean;
-    a     : array [0..3] of Interval;
-    u     : Ivector;
-    b,c,d : Ivector1;
-    p     : Ivector2;
-    q     : Ivector3;
-begin
-SetLength(b,n);
-SetLength(c,n);
-SetLength(d,n);
-SetLength(u,n);
-SetLength(p,n);
-SetLength(q,n);
-  if n<1
-    then st:=1
-    else if not compare_equal(f[0],f[n])
-           then st:=3
-           else if (compare_less(xx, x[0])) or (compare_less(x[n], xx))
-                  then st:=4
-                  else begin
-                         st:=0;
-                         i:=-1;
-                         repeat
-                           i:=i+1;
-                           for k:=i+1 to n do
-                             if compare_equal(x[i],x[k])
-                               then st:=2
-                         until (i=n-1) or (st=2)
-                       end;
-  if st=0
-    then begin
-           if n>1
-             then begin
-                    v:=x[1]-x[0];
-                    z:=x[n]-x[n-1];
-                    b[n]:=v/(z+v);
-                    c[n]:=1-b[n];
-                    y:=f[n];
-                    d[n]:=6*((f[1]-y)/v-(y-f[n-1])/z)/(z+v);
-                    for i:=1 to n-1 do
-                      begin
-                        z:=x[i];
-                        y:=x[i+1]-z;
-                        z:=z-x[i-1];
-                        v:=f[i];
-                        b[i]:=y/(y+z);
-                        c[i]:=1-b[i];
-                        d[i]:=6*((f[i+1]-v)/y-(v-f[i-1])/z)/(y+z)
-                      end;
-                    if n>2
-                      then begin
-                             u[1]:=2;
-                             c[2]:=c[2]/2;
-                             q[2]:=-b[n]/2;
-                             for i:=2 to n-2 do
-                               begin
-                                 v:=2-b[i-1]*c[i];
-                                 c[i+1]:=c[i+1]/v;
-                                 q[i+1]:=-q[i]*b[i-1]/v;
-                                 u[i]:=v
-                               end;
-                             v:=2-c[n-1]*b[n-2];
-                             q[n]:=(c[n]-q[n-1]*b[n-2])/v;
-                             u[n-1]:=v;
-                             p[1]:=c[1];
-                             for i:=2 to n-2 do
-                               p[i]:=-c[i]*p[i-1];
-                             p[n-1]:=b[n-1]-c[n-1]*p[n-2];
-                             v:=2-c[1]*p[2];
-                             for i:=2 to n-2 do
-                               v:=v-p[i]*p[i+1];
-                             u[n]:=v-p[n-1]*q[n];
-                             for i:=2 to n-1 do
-                               d[i]:=d[i]-c[i]*d[i-1];
-                             v:=d[n];
-                             for i:=2 to n do
-                               v:=v-q[i]*d[i-1];
-                             d[n]:=v;
-                             u[n]:=d[n]/u[n];
-                             u[n-1]:=(d[n-1]-p[n-1]*u[n])/u[n-1];
-                             for i:=n-2 downto 1 do
-                               u[i]:=(d[i]-b[i]*u[i+1]-p[i]*u[n])/u[i]
-                           end
-                      else begin
-                             y:=d[1];
-                             z:=d[2];
-                             v:=4-c[2]*b[1];
-                             u[1]:=(2*y-b[1]*z)/v;
-                             u[2]:=(2*z-c[2]*y)/v;
-                           end
-                  end
-             else u[1]:=0;
-           u[0]:=u[n];
-           found:=False;
-           i:=-1;
-           repeat
-             i:=i+1;
-             if (compare_less_or_equal(x[i], xx)) and (compare_less_or_equal(xx, x[i+1]))
-               then found:=True
-           until found;
-           y:=x[i+1]-x[i];
-           z:=u[i+1];
-           v:=u[i];
-           a[0]:=f[i];
-           a[1]:=(f[i+1]-f[i])/y-(2*v+z)*y/6;
-           a[2]:=v/2;
-           a[3]:=(z-v)/(6*y);
-           y:=a[3];
-           z:=xx-x[i];
-           for i:=2 downto 0 do
-             y:=y*z+a[i];
-           intervalperiodsplinevalue:=y
-         end
-end;
-
-
-
-{---------------------------------------------------------------------------}
-{---------------------------------------------------------------------------}
-{---------------------------------------------------------------------------}
-{---------------------------------------------------------------------------}
 
 {---------------------------------------------------------------------------}
 {  The procedure clampedsplinecoeffns calculates the coefficients of the    }
@@ -510,6 +196,89 @@ SetLength(d,n);
          end
 end;
 
+procedure intervalclampedsplinecoeffns (n         : Integer;
+                                x,f       : Ivector;
+                                f1x0,f1xn : interval;
+                                var a     : Imatrix;
+                                var st    : Integer);
+
+var i,k        : Integer;
+    u,v,y,z,xi : interval;
+    d          : Ivector;
+    b          : Ivector1;
+    c          : Ivector2;
+begin
+SetLength(b,n);
+SetLength(c,n);
+SetLength(d,n);
+
+  if n<1
+    then st:=1
+    else begin
+           st:=0;
+           i:=-1;
+           repeat
+             i:=i+1;
+             for k:=i+1 to n do
+               if compare_equal(x[i],x[k])
+                 then st:=2
+           until (i=n-1) or (st=2)
+         end;
+  if st=0
+    then begin
+           b[0]:=1;
+           u:=x[1]-x[0];
+           d[0]:=6*((f[1]-f[0])/u-f1x0)/u;
+           c[n]:=1;
+           u:=x[n]-x[n-1];
+           d[n]:=6*(f1xn-(f[n]-f[n-1])/u)/u;
+           for i:=1 to n-1 do
+             begin
+               z:=x[i];
+               y:=x[i+1]-z;
+               z:=z-x[i-1];
+               u:=f[i];
+               b[i]:=y/(y+z);
+               c[i]:=1-b[i];
+               d[i]:=6*((f[i+1]-u)/y-(u-f[i-1])/z)/(y+z)
+             end;
+           u:=2;
+           i:=-1;
+           y:=d[0]/u;
+           d[0]:=y;
+           repeat
+             i:=i+1;
+             z:=b[i]/u;
+             b[i]:=z;
+             u:=2-z*c[i+1];
+             y:=(d[i+1]-y*c[i+1])/u;
+             d[i+1]:=y
+           until i=n-1;
+           u:=d[n];
+           for i:=n-1 downto 0 do
+             begin
+               u:=d[i]-u*b[i];
+               d[i]:=u
+             end;
+           for i:=0 to n-1 do
+             begin
+               u:=f[i];
+               xi:=x[i];
+               z:=x[i+1]-xi;
+               y:=d[i];
+               v:=(f[i+1]-u)/z-(2*y+d[i+1])*z/6;
+               z:=(d[i+1]-y)/(6*z);
+               y:=y/2;
+               a[0,i]:=((-z*xi+y)*xi-v)*xi+u;
+               u:=3*z*xi;
+               a[1,i]:=(u-2*y)*xi+v;
+               a[2,i]:=y-u;
+               a[3,i]:=z
+             end
+         end
+end;
+
+
 {---------------------------------------------------------------------------}
 {  The function clampedsplinevalue calculates the value of the clamped      }
 {  cubic spline interpolant for a function given by its values at nodes and }
@@ -572,6 +341,97 @@ SetLength(d,n);
                     i:=i+1;
                     for k:=i+1 to n do
                       if x[i]=x[k]
+                        then st:=2
+                  until (i=n-1) or (st=2)
+                end;
+  if st=0
+    then begin
+           b[0]:=1;
+           u:=x[1]-x[0];
+           d[0]:=6*((f[1]-f[0])/u-f1x0)/u;
+           c[n]:=1;
+           u:=x[n]-x[n-1];
+           d[n]:=6*(f1xn-(f[n]-f[n-1])/u)/u;
+           for i:=1 to n-1 do
+             begin
+               z:=x[i];
+               y:=x[i+1]-z;
+               z:=z-x[i-1];
+               u:=f[i];
+
+
+               b[i]:=y/(y+z);
+               c[i]:=1-b[i];
+               d[i]:=6*((f[i+1]-u)/y-(u-f[i-1])/z)/(y+z)
+             end;
+           u:=2;
+           i:=-1;
+           y:=d[0]/u;
+           d[0]:=y;
+           repeat
+             i:=i+1;
+             z:=b[i]/u;
+             b[i]:=z;
+             u:=2-z*c[i+1];
+             y:=(d[i+1]-y*c[i+1])/u;
+             d[i+1]:=y
+           until i=n-1;
+           u:=d[n];
+           for i:=n-1 downto 0 do
+             begin
+               u:=d[i]-u*b[i];
+               d[i]:=u
+             end;
+           found:=False;
+           i:=-1;
+           repeat
+             i:=i+1;
+             if (xx>=x[i]) and (xx<=x[i+1])
+               then found:=True
+           until found;
+           y:=x[i+1]-x[i];
+           z:=d[i+1];
+           u:=d[i];
+           a[0]:=f[i];
+           a[1]:=(f[i+1]-f[i])/y-(2*u+z)*y/6;
+           a[2]:=u/2;
+           a[3]:=(z-u)/(6*y);
+           y:=a[3];
+           z:=xx-x[i];
+           for i:=2 downto 0 do
+             y:=y*z+a[i];
+           clampedsplinevalue:=y
+         end
+end;
+
+
+function intervalclampedsplinevalue (n            : Integer;
+                             x,f          : Ivector;
+                             f1x0,f1xn,xx : interval;
+                             var st       : Integer) : Extended;
+
+var i,k   : Integer;
+    u,y,z : interval;
+    found : Boolean;
+    a     : array [0..3] of interval;
+    d     : Ivector;
+    b     : Ivector1;
+    c     : Ivector2;
+begin
+SetLength(b,n);
+SetLength(c,n);
+SetLength(d,n);
+  if n<1
+    then st:=1
+    else if (compare_less(xx,x[0])) or compare_less(x[n],xx)
+           then st:=3
+           else begin
+                  st:=0;
+                  i:=-1;
+                  repeat
+                    i:=i+1;
+                    for k:=i+1 to n do
+                      if compare_equal(x[i],x[k])
                         then st:=2
                   until (i=n-1) or (st=2)
                 end;
@@ -730,6 +590,7 @@ begin
       Label1.Caption := 'n';
       CheckBox1.Enabled := True;
       CheckBox2.Enabled := True;
+      CheckBox2.Caption := 'Obliczanie wspó³czynników';
       if st = 0 then
       begin
         Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
@@ -746,7 +607,7 @@ begin
   else
   begin
     Edit2.Visible := True;
-    Label5.Visible := True;
+    //Label5.Visible := True;
     CheckBox1.Enabled := False;
     CheckBox1.Caption := 'Arytmetyka przedzia³owa w³¹czona';
     Label2.Caption := '';
@@ -784,8 +645,8 @@ begin
       begin
         xx2.a := left_read(Edit1.Text);
         xx2.b := right_read(Edit2.Text);
-        intervalperiodsplinecoeffns(n, x2, f2, a2, st);
-        Wynik2 := intervalperiodsplinevalue(n, x2, f2, xx2, st);
+        intervalclampedsplinecoeffns(n, x2, f2, a2, st);
+        Wynik2 := intervalclampedsplinevalue(n, x2, f2, xx2, st);
         inputNumber := -1;
         Label1.Caption := 'n';
         Edit2.Visible := False;
