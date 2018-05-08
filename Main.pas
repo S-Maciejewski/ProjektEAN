@@ -408,7 +408,7 @@ end;
 function intervalclampedsplinevalue (n            : Integer;
                              x,f          : Ivector;
                              f1x0,f1xn,xx : interval;
-                             var st       : Integer) : Extended;
+                             var st       : Integer) : interval;
 
 var i,k   : Integer;
     u,y,z : interval;
@@ -477,7 +477,7 @@ SetLength(d,n);
            i:=-1;
            repeat
              i:=i+1;
-             if (xx>=x[i]) and (xx<=x[i+1])
+             if (compare_less(x[i],xx) or compare_equal(x[i],xx) and (compare_less(xx,x[i+1]) or compare_equal(xx, x[i+1])))
                then found:=True
            until found;
            y:=x[i+1]-x[i];
@@ -491,7 +491,7 @@ SetLength(d,n);
            z:=xx-x[i];
            for i:=2 downto 0 do
              y:=y*z+a[i];
-           clampedsplinevalue:=y
+           intervalclampedsplinevalue:=y
          end
 end;
 
@@ -582,6 +582,7 @@ begin
     end
 
 
+    //Arytmetyka interwa³owa
     else if inputNumber = 2*(n+1)+3 then
     begin
       xx := strToFloat(Edit1.Text);
@@ -607,7 +608,7 @@ begin
   else
   begin
     Edit2.Visible := True;
-    //Label5.Visible := True;
+    Label5.Visible := True;
     CheckBox1.Enabled := False;
     CheckBox1.Caption := 'Arytmetyka przedzia³owa w³¹czona';
     Label2.Caption := '';
@@ -639,14 +640,65 @@ begin
       begin
         Label1.Caption := 'xx';
       end
+      else if inputNumber = 2*(n+1) then
+      begin
+        Label1.Caption := 'f1x0';
+      end
       else Label1.Caption := 'f[' + intToStr((inputNumber)mod (n+1)) +']'
     end
+
+
     else if inputNumber = 2*(n+1)+1 then
+    begin
+       f1x02.a := left_read(Edit1.Text);
+       f1x02.b := right_read(Edit1.Text);
+       Label1.Caption := 'f1xn';
+       if CheckBox2.State = cbUnchecked then
+      begin
+        CheckBox2.Enabled := False;
+        CheckBox2.Caption := 'Obliczanie wartoœci';
+        Button1.Caption := 'Oblicz';
+      end;
+    end
+    else if inputNumber = 2*(n+1)+2 then
+    begin
+      f1xn2.a := left_read(Edit1.Text);
+      f1xn2.b := right_read(Edit1.Text); //Tu skoñczy³em, TODO wczytywanie
+      if CheckBox2.State = cbUnchecked then
+      begin
+        CheckBox2.Enabled := False;
+        CheckBox2.Caption := 'Obliczanie wartoœci';
+        Label1.Caption := 'xx';
+        Button1.Caption := 'Oblicz';
+      end
+      else
+      begin
+        inputNumber := -1;
+        Label1.Caption := 'n';
+        clampedsplinecoeffns(n, x, f, f1x0, f1xn, a, st);
+        if st = 0 then
+        begin
+        for j := 0 to n-1 do
+          for i:=0 to 3 do
+          begin
+            Str(a[i][j],tmp);
+            if i mod 2 = 0 then
+              Label2.Caption := Label2.Caption + 'a[' + IntToStr(i) + ', ' + IntToStr(j) + '] = ' + tmp + '     '
+            else Label2.Caption := Label2.Caption + 'a[' + IntToStr(i) + ', ' + IntToStr(j) + '] = ' + tmp + #10+#13
+          end;
+        Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
+        Str(Wynik,tmp);
+        end
+      else  Label2.Caption := 'Nie mo¿na obliczyæ wartoœci - b³¹d st = ' + IntToStr(st);
+      end;
+     end;
+
+    {else if inputNumber = 2*(n+1)+1 then
       begin
         xx2.a := left_read(Edit1.Text);
         xx2.b := right_read(Edit2.Text);
-        intervalclampedsplinecoeffns(n, x2, f2, a2, st);
-        Wynik2 := intervalclampedsplinevalue(n, x2, f2, xx2, st);
+        //intervalclampedsplinecoeffns(n, x2, f2, a2, st);
+        //Wynik2 := intervalclampedsplinevalue(n, x2, f2, xx2, st);
         inputNumber := -1;
         Label1.Caption := 'n';
         Edit2.Visible := False;
@@ -671,7 +723,7 @@ begin
 
         else  Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
 
-      end;
+      end;}
 
 
     inputNumber := inputNumber + 1;

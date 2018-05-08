@@ -89,7 +89,7 @@ object Form1: TForm1
     OnClick = Button1Click
   end
   object Edit1: TEdit
-    Left = 152
+    Left = 155
     Top = 56
     Width = 121
     Height = 21
