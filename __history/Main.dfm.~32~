@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Kalkulator funkcji sklejanych'
-  ClientHeight = 468
-  ClientWidth = 844
+  ClientHeight = 342
+  ClientWidth = 681
   Color = 16772817
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,13 +11,12 @@ object Form1: TForm1
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Position = poDesigned
   Visible = True
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
-    Left = 216
-    Top = 51
+    Left = 64
+    Top = 52
     Width = 10
     Height = 22
     Caption = 'n'
@@ -41,8 +40,8 @@ object Form1: TForm1
     ParentFont = False
   end
   object Label5: TLabel
-    Left = 323
-    Top = 27
+    Left = 155
+    Top = 24
     Width = 294
     Height = 22
     Caption = 'Podaj lewy i prawy kraniec przedzia'#322'u'
@@ -55,7 +54,7 @@ object Form1: TForm1
     Visible = False
   end
   object Label3: TLabel
-    Left = 47
+    Left = 64
     Top = 168
     Width = 54
     Height = 22
@@ -68,8 +67,8 @@ object Form1: TForm1
     ParentFont = False
   end
   object Label4: TLabel
-    Left = 163
-    Top = 27
+    Left = 16
+    Top = 24
     Width = 120
     Height = 22
     Caption = 'Podaj warto'#347'ci:'
@@ -81,7 +80,7 @@ object Form1: TForm1
     ParentFont = False
   end
   object Button1: TButton
-    Left = 680
+    Left = 488
     Top = 54
     Width = 75
     Height = 25
@@ -90,15 +89,15 @@ object Form1: TForm1
     OnClick = Button1Click
   end
   object Edit1: TEdit
-    Left = 323
-    Top = 55
+    Left = 155
+    Top = 56
     Width = 121
     Height = 21
     TabOrder = 1
   end
   object CheckBox1: TCheckBox
-    Left = 323
-    Top = 82
+    Left = 163
+    Top = 83
     Width = 286
     Height = 23
     Caption = 'Arytmetyka przedzia'#322'owa'
@@ -111,15 +110,15 @@ object Form1: TForm1
     TabOrder = 2
   end
   object Edit2: TEdit
-    Left = 496
-    Top = 55
+    Left = 328
+    Top = 56
     Width = 121
     Height = 21
     TabOrder = 3
     Visible = False
   end
   object CheckBox2: TCheckBox
-    Left = 323
+    Left = 163
     Top = 120
     Width = 286
     Height = 17
