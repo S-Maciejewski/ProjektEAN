@@ -34,6 +34,8 @@ type interval = record
                   class operator Multiply (x, y : interval) : interval;
                   class operator Divide (x, y : interval) : interval;
                 end;
+    Ivector = array of interval;
+    Imatrix = array of array of interval;
 
 // Functions for basic arithmetic operations for proper intervals (one can use
 // these functions instead of overloading operators in interval record type
@@ -72,6 +74,7 @@ function dimul (const x, y : dinterval) : dinterval;
 function didiv (const x, y : dinterval) : dinterval;
 
 // Data reading functions for proper intervals
+function float_read (const sa : string) : Extended;
 function int_read (const sa : string) : interval;
 function left_read (const sa : string) : Extended;
 function right_read (const sa : string) : Extended;
@@ -959,6 +962,20 @@ implementation
                and (significand[Length(significand)-1]<>'.') do
              significand:=Copy(significand, 1, Length(significand)-1)
   end {to_fixed_point};
+
+  function float_read (const sa : string) : Extended;
+  var sa1            : string;
+      sep            : Char;
+      x              : Extended;
+  begin
+    sa1:=sa;
+    if FormatSettings.DecimalSeparator=','
+      then sep:=','
+      else sep:='.';
+    if (Pos('.', sa1)>0) and (FormatSettings.DecimalSeparator=',')
+      then sa1[Pos('.', sa1)]:=',';
+    Result :=  StrToFloat(sa1);
+  end;
 
   function int_read (const sa : string) : interval;
   var x, px, nx          : Extended;

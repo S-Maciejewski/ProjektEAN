@@ -243,6 +243,7 @@ SetLength(d,n);
                d[i]:=6*((f[i+1]-u)/y-(u-f[i-1])/z)/(y+z)
              end;
            u:=2;
+           //u:= int_read('2');
            i:=-1;
            y:=d[0]/u;
            d[0]:=y;
@@ -455,7 +456,10 @@ SetLength(d,n);
                c[i]:=1-b[i];
                d[i]:=6*((f[i+1]-u)/y-(u-f[i-1])/z)/(y+z)
              end;
-           u:=2;
+           //u:=2;
+           u.a:=left_read('2');
+           u.b:=strToInt('2');
+           //u:=int_read('2');
            i:=-1;
            y:=d[0]/u;
            d[0]:=y;
@@ -477,7 +481,7 @@ SetLength(d,n);
            i:=-1;
            repeat
              i:=i+1;
-             if (compare_less(x[i],xx) or compare_equal(x[i],xx) and (compare_less(xx,x[i+1]) or compare_equal(xx, x[i+1])))
+             if (compare_less_or_equal(x[i],xx) and (compare_less_or_equal(xx,x[i+1])))
                then found:=True
            until found;
            y:=x[i+1]-x[i];
@@ -648,7 +652,7 @@ begin
     else if inputNumber = 2*(n+1)+1 then
     begin
        f1x02.a := left_read(Edit1.Text);
-       f1x02.b := right_read(Edit1.Text);
+       f1x02.b := right_read(Edit2.Text);
        Label1.Caption := 'f1xn';
        if CheckBox2.State = cbUnchecked then
       begin
@@ -661,7 +665,7 @@ begin
     else if inputNumber = 2*(n+1)+2 then
     begin
       f1xn2.a := left_read(Edit1.Text);
-      f1xn2.b := left_read(Edit1.Text);
+      f1xn2.b := right_read(Edit2.Text);
       if CheckBox2.State = cbUnchecked then
       begin
         CheckBox2.Enabled := False;
@@ -696,7 +700,7 @@ begin
     else if inputNumber = 2*(n+1)+3 then
     begin
       xx2.a := left_read(Edit1.Text);
-      xx2.b := right_read(Edit1.Text);
+      xx2.b := right_read(Edit2.Text);
       Wynik2 := intervalclampedsplinevalue(n, x2, f2, f1x02, f1xn2, xx2, st);
       inputNumber := -1;
       Label1.Caption := 'n';
@@ -709,56 +713,13 @@ begin
           Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
           iends_to_strings(Wynik2, Wynik2_lewy, Wynik2_prawy);
           Str(int_width(Wynik2),tmp);
-
+                     //Tu jest jakiœ error
           Label2.Caption := Label2.Caption + 'Wynik = (' + Wynik2_lewy + ', ' + Wynik2_prawy + ')' + #10+#13;
-          Label2.Caption := Label2.Caption + 'Szerokoœæ przedzia³u = ' + int_width(Wynik2);
+          Label2.Caption := Label2.Caption + 'Szerokoœæ przedzia³u = ' + tmp;
         end
         else  Label2.Caption := 'Nie mo¿na obliczyæ wartoœci - b³¹d st = ' + IntToStr(st);
     end;
-      {if st = 0 then
-      begin
-        Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
-        Str(Wynik,tmp);
-
-        Label2.Caption := Label2.Caption + 'Wynik = ' + tmp;
-      end
-      else  Label2.Caption := 'Nie mo¿na obliczyæ wartoœci - b³¹d st = ' + IntToStr(st);
-      end;}
-
-
   end;
-
-    {else if inputNumber = 2*(n+1)+1 then
-      begin
-        xx2.a := left_read(Edit1.Text);
-        xx2.b := right_read(Edit2.Text);
-        //intervalclampedsplinecoeffns(n, x2, f2, a2, st);
-        //Wynik2 := intervalclampedsplinevalue(n, x2, f2, xx2, st);
-        inputNumber := -1;
-        Label1.Caption := 'n';
-        Edit2.Visible := False;
-        Label5.Visible := False;
-        CheckBox1.Enabled := True;
-        if st = 0 then
-        begin
-          for j := 0 to n-1 do
-            for i:=0 to 3 do
-            begin
-              iends_to_strings(a2[i][j], tmp2_lewy, tmp2_prawy);
-              if i mod 2 = 0 then
-                Label2.Caption := Label2.Caption + 'a[' + IntToStr(i) + ', ' + IntToStr(j) + '] = (' + tmp2_lewy + ', ' + tmp2_prawy +')    '
-              else Label2.Caption := Label2.Caption + 'a[' + IntToStr(i) + ', ' + IntToStr(j) + '] = (' + tmp2_lewy + ', ' + tmp2_prawy +')' + #10+#13
-            end;
-
-          Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
-          iends_to_strings(Wynik2, Wynik2_lewy, Wynik2_prawy);
-
-          Label2.Caption := Label2.Caption + 'Wynik = (' + Wynik2_lewy + ', ' + Wynik2_prawy + ')';
-        end
-
-        else  Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
-
-      end;}
     inputNumber := inputNumber + 1;
   end;
 
