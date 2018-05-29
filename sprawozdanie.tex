@@ -1,0 +1,215 @@
+\documentclass[a4paper, 10pt]{article}
+
+%% Language and font encodings
+\usepackage[polish]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage[T1]{fontenc}
+
+\usepackage{listings}
+\usepackage{xcolor}
+\lstset { %
+    language=C++,
+    backgroundcolor=\color{black!5}, % set backgroundcolor
+    basicstyle=\footnotesize,% basic font setting
+}
+
+
+%% Sets page size and margins
+\usepackage[a4paper,top=3cm,bottom=2cm,left=3cm,right=3cm,marginparwidth=1.75cm]{geometry}
+
+%% Useful packages
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{enumitem}
+
+\setlength\parindent{0pt}
+
+\def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
+\let\endchangemargin=\endlist 
+
+\title{Obliczanie wartości i współczynników funkcji sklejanej stopnia trzeciego z zadanymi
+wartościami jej pochodnej na końcach przedziału}
+\author{Sebastian Maciejewski \\Nr indeksu 132275}
+
+\begin{document}
+\maketitle
+
+\section{Zastosowanie i opis funkcji}
+
+Funkcja \textit{clampedsplinevalue} oblicza w zadanym punkcie wartość funkcji sklejanej stopnia trzeciego, która interpoluje funkcję $f$ p znanych wartościach $f(x_i)$ dla $i = 0, 1, ..., n$
+oraz wartościach $f'(x_0)$ i $f'(x_n)$. \\
+
+\noindent Procedura \textit{clampedsplinecoeffns} oblicza współczynniki przy kolejnych potęgach $x$ funkcji sklejanej trzeciego stopnia, tj. 
+$$ S(x) = a_{0,i} + a_{1,i}x + a_{2,i}x^2 + a_{3,i}x^3, \qquad  i=0,1,...,n-1, $$
+interpolującej funkcję $f$, dla której znane są wartości $f(x_i)$ w węzłach $x_i$ oraz $f'(x_0)$ i $f'(x_n)$.
+
+\section{Opis metody}
+
+\subsection*{Wyznaczanie wartości}
+
+Funkcję sklejaną stopnia trzeciego można w każdym z przedziałów $[x_i,x_{i-1})$ przedstawić w postaci
+\begin{equation}
+S(x) = a_i + b_i t+c_i t^2 + d_i t^3
+\end{equation}
+
+gdzie $t=x-x_i$ dla $x \in [x_i,x_{i-1}), i=0,1,...,n-1$. W celu wyznaczenia funkcji sklejanej
+postaci (1), która spełnia warunki\\
+
+$S(x_i) = f(x_i)$ dla $i = 0,1,...,n-1$ oraz $S'(x_0) = f'(x_0)$ i $S'(x_n) = f'(x_n)$,\\ 
+
+tj. określenia współczynników $a_i , b_i , c_i$ oraz $d_i$ dla $i = 0,1,...,n-1$ należy najpierw rozwiązać układ równań liniowych
+
+\begin{equation}
+\begin{split}
+&2M_0 + \lambda_0 M_1 = \delta_0\\
+&\mu_i M_{i-1} + 2M_i + \lambda_i M_{i+1} = \delta_i, \quad i= 1,2,...,n-1,\\
+&\mu_n M_{i-1} + 2M_n = \delta_n,
+\end{split}
+\end{equation}
+
+w którym współczynniki $\lambda_i (i=0,1,...,n-1)$, $\mu_i (i=1,2,...,n)$ i $\delta_i (i=0,1,...,n)$ są określone następującymi wzorami:
+\begin{align*}
+\begin{split}
+&\lambda_0 = 1,\\
+&\delta_0 = \frac{6}{h_1}\left(\frac{f(x_1) - f(x_0)}{h_1} - f'(x_0)\right),\\
+&\lambda_i = \frac{h_{i+1}}{h_{i+1}+h_i},\\ 
+&\mu_i = 1-\lambda_i ,\\
+&\delta_i = \frac{6}{h_{i+1}+h_i}\left(\frac{f(x_{i+1})-f(x_i)}{h_{i+1}} - \frac{f(x_i)-f(x_{i-1})}{h_i}\right), \quad i=1,2,...,n-1,\\
+&\mu_n=1,\\
+&\delta_n = \frac{6}{h_n}\left(f'(x_n) - \frac{f(x_n)-f(x_{n-1})}{h_n}\right),
+\end{split}
+\end{align*}
+
+przy czym $h_{i+1} = x_{x+1} - x_i$. Po rozwiązaniu układu równań (2) współczynniki funkcji sklejanej wyznacza się z następujących zależności:
+
+\begin{align*}
+\begin{split}
+&a_i = f(x_i),\\
+&b_i = \frac{f(x_{i+1})-f(x_i)}{h_{i+1}} - \frac{2M_i + M_{i+1}}{6}h_{i+1},\\
+&c_i = \frac{M_i}{2},\\
+&d_i = \frac{M_{i+1}-M_i}{6h_{i+1}}.
+\end{split}
+\end{align*}
+
+W funkcji \textit{clampedsplinevalue} układ równań liniowych (2) rozwiązuje się metodą Crouta,
+a następnie określa się przedział $[x_i,x_{i+1})$ zawierający dany punkt $x$ i dla tego przedziału wyznacza się współczynniki $a_i, b_i, c_i$ oraz $d_i$. Następnie z wzoru (1) oblicza się wartość funkcji sklejanej.
+
+\subsection*{Wyznaczanie współczynników}
+Współczynniki obliczane przez procedurę \textit{clampedsplinecoeffns}, tj. $a_{0,i},a_{1,i},a_{2,i}$ oraz $a_{3,i}$, są związane ze współczynnikami $a_i, b_i, c_i$ oraz $d_i$ funkcji sklejanej $S$ zapisanej w postaci (1) następującymi zależnościami: 
+
+\begin{align*}
+\begin{split}
+&a_{0,i} = a_i - b_ix_i + c_i x_i^2 - d_ix_i^3, \\
+&a_{1,i} = b_i - 2c_ix_i + 3d_ix_i^2, \\
+&a_{2,i} = c_i - 3d_ix_i, \\
+&a_{3,i} = d_i. \\
+\end{split}
+\end{align*}
+
+W celu otrzymania współczynników funkcji $S$ zapisanej w postaci (1) należy skorzystać z następujących wzorów:
+
+\begin{align*}
+\begin{split}
+&a_i = a_{0,i} + a_{1,i}x_i + a_{2,i}x_i^2 + a_{3,i}x_i^3, \\
+&b_i = a_{1,i} + 2a_{2,i}x_i + 3a_{3,i}x_i^2, \\
+&c_i = a_{2,i} + 3a_{3,i}x_i, \\
+&d_i = a_{3,i}. \\
+\end{split}
+\end{align*}
+ 
+\section{Wywołanie procedury}
+
+\subsection*{Wyznaczanie wartości}
+
+\textit{intervalclampedsplinevalue (n, x, f, f1x0, f1xn, xx, st)}
+
+\subsection*{Wyznaczanie współczynników}
+
+\textit{intervalclampedsplinecoeffns (n, x, f, f1x0, f1xn, a, st)}
+
+\section{Dane}
+
+\begin{description}
+\item[$n$ \enskip --] liczba węzłów interpolacji minus 1 (węzły są ponumerowane od 0 do n),
+\item[$x$ \enskip --] tablica zawierająca wartości węzłów,
+\item[$f$ \enskip --] tablica zawierająca wartości interpolowanej funkcji w węzłach,
+\item[$f1x0$ \enskip --] wartość $f'(x_0)$,
+\item[$f1xn$ \enskip --] wartość $f'(x_n)$,
+\item[$xx$ \enskip --] punkt, w którym należy obliczyć wartość naturalnej funkcji sklejanej stopnia trzeciego.
+\end{description}
+
+\section{Wyniki}
+
+\subsection*{Wyznaczanie wartości}
+
+\textit{clampedsplinevalue (n,x,f,f1x0,f1xn,xx,st)} - wartość funkcji sklejanej stopnia trzeciego w punkcie $xx$.
+
+\subsection*{Wyznaczanie współczynników}
+
+\begin{description}
+\item[$a$ \enskip --] tablica współczynników funkcji sklejanej (element $a[k,i]$ zawiera wartość współczynnika przy $x^k (k=0,1,2,3)$ dla przedziału $[x_i, x_{i+1}),\enskip i=0,1,...,n-1$).
+\end{description}
+
+\section{Inne parametry}
+
+\begin{description}
+\item[$st$ \enskip --] zmienna, której w wyniku wykonania funkcji zostanie przypisana jedna z następujących wartości:
+
+\begin{changemargin}{0,5cm}{1cm} 
+1, jeżeli $n < 1$, \\
+2, gdy istnieją równe wartości $x[i]$ i $x[j]$ dla $i \neq j (i,j = 0,1,...,n)$,\\
+3, jeśli $xx < x[0]$ lub $xx>x[n]$, \\
+0, w przeciwnym przypadku.
+\end{changemargin} 
+
+\textbf{Uwaga:} Jeżeli $st \neq 0$, to wartość funkcji \textit{clampedsplinevalue} i elementy tablicy $a$ w funkcji \textit{clampedsplinecoeffns} nie są obliczane.
+\end{description}
+
+\section{Typy parametrów}
+
+\subsection*{Wyznaczanie wartości}
+
+\textbf{\textit{Integer}}: $n,st$\\
+\textit{interval}: $f1x0,f1xn,xx$\\
+\textit{Ivector}: $x,f$
+
+\subsection*{Wyznaczanie współczynników}
+
+\textbf{\textit{Integer}}: $n,st$\\
+\textit{interval}: $f1x0,f1xn$\\
+\textit{Ivector}: $x,f$\\
+\textit{Imatrix}: $a$
+
+\section{Identyfikatory nielokalne}
+
+\begin{description}[before={\renewcommand\makelabel[1]{\normalfont ##1}}]
+\item[\textit{Ivector} --] nazwa typu tablicowego $[q_0...q_n]$ o elementach typu \textit{interval}
+\item[\textit{Imatrix} --] nazwa typu tablicowego $[0..3, q_0...q_{n-1}]$ o elementach typu \textit{interval}
+\end{description}
+
+%% DONE %%
+
+\section{Funkcje i procedury}
+%\begin{lstlisting}
+%KOD 2 FUNKCJI W ARYTMETYCE PRZEDZIAŁOWEJ
+%\end{lstlisting}
+
+
+\section{Przykłady}
+
+
+\subsection*{Zwykła arytmetyka}
+
+%\begin{lstlisting}
+%PRZYKŁAD
+%\end{lstlisting}
+
+\subsection*{Arytmetyka przedziałowa}
+
+%\begin{lstlisting}
+%PRZYKŁAD
+%\end{lstlisting}
+
+\end{document}
