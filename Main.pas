@@ -28,15 +28,15 @@ type
   end;
 
   vector = array of Extended;
-  vector1 = array of Extended;
-  vector2 = array of Extended;
-  vector3 = array of Extended;
+//  vector1 = array of Extended;
+//  vector2 = array of Extended;
+//  vector3 = array of Extended;
   matrix = array of array of Extended;
 
   Ivector = array of interval;
-  Ivector1 = array of interval;
-  Ivector2 = array of interval;
-  Ivector3 = array of interval;
+//  Ivector1 = array of interval;
+//  Ivector2 = array of interval;
+//  Ivector3 = array of interval;
   Imatrix = array of array of interval;
 
 var
@@ -122,9 +122,9 @@ procedure clampedsplinecoeffns (n         : Integer;
 
 var i,k        : Integer;
     u,v,y,z,xi : Extended;
-    d          : vector;
-    b          : vector1;
-    c          : vector2;
+    d,b,c          : vector;
+//    b          : vector1;
+//    c          : vector2;
 begin
 SetLength(b,n);
 SetLength(c,n);
@@ -204,9 +204,9 @@ procedure intervalclampedsplinecoeffns (n         : Integer;
 
 var i,k        : Integer;
     u,v,y,z,xi : interval;
-    d          : Ivector;
-    b          : Ivector1;
-    c          : Ivector2;
+    d,b,c          : Ivector;
+//    b          : Ivector1;
+//    c          : Ivector2;
 begin
 SetLength(b,n);
 SetLength(c,n);
@@ -226,8 +226,7 @@ SetLength(d,n);
          end;
   if st=0
     then begin
-           //b[0]:=1;
-           b[0]:=int_read('1');
+           b[0]:=1;
            u:=x[1]-x[0];
            d[0]:=6*((f[1]-f[0])/u-f1x0)/u;
            c[n]:=1;
@@ -244,8 +243,6 @@ SetLength(d,n);
                d[i]:=6*((f[i+1]-u)/y-(u-f[i-1])/z)/(y+z)
              end;
            u:=2;
-
-           //u:= int_read('2');
            i:=-1;
            y:=d[0]/u;
            d[0]:=y;
@@ -326,9 +323,9 @@ var i,k   : Integer;
     u,y,z : Extended;
     found : Boolean;
     a     : array [0..3] of Extended;
-    d     : vector;
-    b     : vector1;
-    c     : vector2;
+    d,b,c     : vector;
+//    b     : vector1;
+//    c     : vector2;
 begin
 SetLength(b,n);
 SetLength(c,n);
@@ -417,9 +414,9 @@ var i,k   : Integer;
     u,y,z : interval;
     found : Boolean;
     a     : array [0..3] of interval;
-    d     : Ivector;
-    b     : Ivector1;
-    c     : Ivector2;
+    d,b,c     : Ivector;
+//    b     : Ivector1;
+//    c     : Ivector2;
 begin
 SetLength(b,n);
 SetLength(c,n);
@@ -593,7 +590,7 @@ begin
       end;
     end
 
-    //Obliczanie warto�ci
+    //Obliczanie wartości
     else if inputNumber = 2*(n+1)+3 then
     begin
       xx := strToFloat(Edit1.Text);
@@ -611,11 +608,11 @@ begin
 
         Label2.Caption := Label2.Caption + 'Wynik = ' + tmp;
       end
-      else  Label2.Caption := 'Nie mo�na obliczyć wartości - błąd st = ' + IntToStr(st);
+      else  Label2.Caption := 'Nie można obliczyć wartości - błąd st = ' + IntToStr(st);
       end;
   end
 
-  //Arytmetyka przedzia�owa
+  //Arytmetyka przedziałowa
 
   else
   begin
@@ -696,9 +693,11 @@ begin
             for i:=0 to 3 do
             begin
               iends_to_strings(a2[i][j], tmp2_lewy, tmp2_prawy);
-              if i mod 2 = 0 then
-                Label2.Caption := Label2.Caption + 'a[' + IntToStr(i) + ', ' + IntToStr(j) + '] = (' + tmp2_lewy + ', ' + tmp2_prawy +')    '
-              else Label2.Caption := Label2.Caption + 'a[' + IntToStr(i) + ', ' + IntToStr(j) + '] = (' + tmp2_lewy + ', ' + tmp2_prawy +')' + #10+#13
+              Label2.Caption := Label2.Caption + 'a[' + IntToStr(i) + ', ' + IntToStr(j) + '] = (' + tmp2_lewy + ', ' + tmp2_prawy +') '+#10+#13+
+              'Szerokość przedziału = ' + StringReplace(FormatFloat('0.000E+00', int_width(a2[i][j])), ',', '.', []) { FloatToStr(int_width(Wynik2)) }+ '  ' + #10+#13;
+              //if i mod 2 = 0 then
+              //  Label2.Caption := Label2.Caption + 'a[' + IntToStr(i) + ', ' + IntToStr(j) + '] = (' + tmp2_lewy + ', ' + tmp2_prawy +')    '
+              //else Label2.Caption := Label2.Caption + 'a[' + IntToStr(i) + ', ' + IntToStr(j) + '] = (' + tmp2_lewy + ', ' + tmp2_prawy +')' + #10+#13
             end;
         Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st);
         end
@@ -725,9 +724,8 @@ begin
           Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
           iends_to_strings(Wynik2, Wynik2_lewy, Wynik2_prawy);
           Str(int_width(Wynik2),tmp);
-                     //Tu jest jakiś error
           Label2.Caption := Label2.Caption + 'Wynik = (' + Wynik2_lewy + ', ' + Wynik2_prawy + ')' + #10+#13;
-          Label2.Caption := Label2.Caption + 'Szerokość przedziału = ' + tmp;
+          Label2.Caption := Label2.Caption + 'Szerokość przedziału = ' + StringReplace(FormatFloat('0.000E+00', int_width(Wynik2)), ',', '.', []) { FloatToStr(int_width(Wynik2)) }+ '  ' + #10+#13;
         end
         else  Label2.Caption := 'Nie można obliczyć wartości - błąd st = ' + IntToStr(st);
     end;
