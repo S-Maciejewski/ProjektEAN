@@ -1,4 +1,4 @@
-unit Main;
+ï»¿unit Main;
 
 interface
 
@@ -226,7 +226,8 @@ SetLength(d,n);
          end;
   if st=0
     then begin
-           b[0]:=1;
+           //b[0]:=1;
+           b[0]:=int_read('1');
            u:=x[1]-x[0];
            d[0]:=6*((f[1]-f[0])/u-f1x0)/u;
            c[n]:=1;
@@ -243,6 +244,7 @@ SetLength(d,n);
                d[i]:=6*((f[i+1]-u)/y-(u-f[i-1])/z)/(y+z)
              end;
            u:=2;
+
            //u:= int_read('2');
            i:=-1;
            y:=d[0]/u;
@@ -456,9 +458,9 @@ SetLength(d,n);
                c[i]:=1-b[i];
                d[i]:=6*((f[i+1]-u)/y-(u-f[i-1])/z)/(y+z)
              end;
-           u:=2;
-           //u.a:=left_read('2');
-           //u.b:=right_read('2');
+           //u:=2;
+           u.a:=left_read('2');
+           u.b:=right_read('2');
            //u:=int_read('2');
            i:=-1;
            y:=d[0]/u;
@@ -508,9 +510,10 @@ procedure TForm1.Button1Click(Sender: TObject);
 begin
  if CheckBox1.State = cbUnchecked then
   begin
+    //AllocConsole();
     Button1.Caption := 'Dalej';
     CheckBox1.Enabled := False;
-    CheckBox1.Caption := 'Arytmetyka przedzia³owa wy³¹czona';
+    CheckBox1.Caption := 'Arytmetyka przedziaÅ‚owa wyÅ‚Ä…czona';
     Label2.Caption := '';
     if inputNumber = 0 then
     begin
@@ -548,7 +551,7 @@ begin
        if CheckBox2.State = cbUnchecked then
       begin
         CheckBox2.Enabled := False;
-        CheckBox2.Caption := 'Obliczanie wartoœci';
+        CheckBox2.Caption := 'Obliczanie wartoÅ›ci';
         Button1.Caption := 'Oblicz';
       end;
     end
@@ -559,16 +562,19 @@ begin
       if CheckBox2.State = cbUnchecked then
       begin
         CheckBox2.Enabled := False;
-        CheckBox2.Caption := 'Obliczanie wartoœci';
+        CheckBox2.Caption := 'Obliczanie wartoÅ›ci';
         Label1.Caption := 'xx';
         Button1.Caption := 'Oblicz';
       end
 
-      //Obliczanie wspó³czynników
+      //Obliczanie wspÃ³Å‚czynnikÃ³w
       else
       begin
         inputNumber := -1;
         Label1.Caption := 'n';
+        CheckBox1.Enabled := True;
+        CheckBox2.Enabled := True;
+        CheckBox2.Caption := 'Obliczanie wspÃ³Å‚czynnikÃ³w';
         clampedsplinecoeffns(n, x, f, f1x0, f1xn, a, st);
         if st = 0 then
         begin
@@ -583,20 +589,21 @@ begin
         Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
         Str(Wynik,tmp);
         end
-      else  Label2.Caption := 'Nie mo¿na obliczyæ wartoœci - b³¹d st = ' + IntToStr(st);
+      else  Label2.Caption := 'Nie moÅ¼na obliczyÄ‡ wartoÅ›ci - bÅ‚Ä…d st = ' + IntToStr(st);
       end;
     end
 
-    //Obliczanie wartoœci
+    //Obliczanie wartoï¿½ci
     else if inputNumber = 2*(n+1)+3 then
     begin
       xx := strToFloat(Edit1.Text);
       Wynik := clampedsplinevalue(n, x, f, f1x0, f1xn, xx, st);
+      //write(wynik);
       inputNumber := -1;
       Label1.Caption := 'n';
       CheckBox1.Enabled := True;
       CheckBox2.Enabled := True;
-      CheckBox2.Caption := 'Obliczanie wspó³czynników';
+      CheckBox2.Caption := 'Obliczanie wspÃ³Å‚czynnikÃ³w';
       if st = 0 then
       begin
         Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
@@ -604,18 +611,18 @@ begin
 
         Label2.Caption := Label2.Caption + 'Wynik = ' + tmp;
       end
-      else  Label2.Caption := 'Nie mo¿na obliczyæ wartoœci - b³¹d st = ' + IntToStr(st);
+      else  Label2.Caption := 'Nie moï¿½na obliczyÄ‡ wartoÅ›ci - bÅ‚Ä…d st = ' + IntToStr(st);
       end;
   end
 
-  //Arytmetyka przedzia³owa
+  //Arytmetyka przedziaï¿½owa
 
   else
   begin
     Edit2.Visible := True;
     Label5.Visible := True;
     CheckBox1.Enabled := False;
-    CheckBox1.Caption := 'Arytmetyka przedzia³owa w³¹czona';
+    CheckBox1.Caption := 'Arytmetyka przedziaÅ‚owa wÅ‚Ä…czona';
     Label2.Caption := '';
     if inputNumber = 0 then
     begin
@@ -657,7 +664,7 @@ begin
        if CheckBox2.State = cbUnchecked then
       begin
         CheckBox2.Enabled := False;
-        CheckBox2.Caption := 'Obliczanie wartoœci';
+        CheckBox2.Caption := 'Obliczanie wartoÅ›ci';
         Button1.Caption := 'Oblicz';
       end;
     end
@@ -669,15 +676,19 @@ begin
       if CheckBox2.State = cbUnchecked then
       begin
         CheckBox2.Enabled := False;
-        CheckBox2.Caption := 'Obliczanie wartoœci';
+        CheckBox2.Caption := 'Obliczanie wartoÅ›ci';
         Label1.Caption := 'xx';
         Button1.Caption := 'Oblicz';
       end
-      //Obliczanie wspó³czynników przedzia³owo
+      //Obliczanie wspÃ³Å‚czynnikÃ³w przedziaÅ‚owo
       else
       begin
         inputNumber := -1;
         Label1.Caption := 'n';
+        Edit2.Visible := False;
+        CheckBox1.Enabled := True;
+        CheckBox2.Enabled := True;
+        CheckBox2.Caption := 'Obliczanie wspÃ³Å‚czynnikÃ³w';
         intervalclampedsplinecoeffns(n, x2, f2, f1x02, f1xn2, a2, st);
         if st = 0 then
         begin
@@ -691,33 +702,34 @@ begin
             end;
         Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st);
         end
-      else  Label2.Caption := 'Nie mo¿na obliczyæ wartoœci - b³¹d st = ' + IntToStr(st);
+      else  Label2.Caption := 'Nie moÅ¼na obliczyÄ‡ wartoÅ›ci - bÅ‚Ä…d st = ' + IntToStr(st);
       end;
 
     end
 
-    //Obliczanie wartoœci przedzia³owo
+    //Obliczanie wartoÅ›ci przedziaÅ‚owo
     else if inputNumber = 2*(n+1)+3 then
     begin
       xx2.a := left_read(Edit1.Text);
       xx2.b := right_read(Edit2.Text);
       Wynik2 := intervalclampedsplinevalue(n, x2, f2, f1x02, f1xn2, xx2, st);
+
       inputNumber := -1;
       Label1.Caption := 'n';
       Edit2.Visible := False;
       CheckBox1.Enabled := True;
       CheckBox2.Enabled := True;
-      CheckBox2.Caption := 'Obliczanie wspó³czynników';
+      CheckBox2.Caption := 'Obliczanie wspÃ³Å‚czynnikÃ³w';
       if st = 0 then
         begin
           Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st) + #10+#13;
           iends_to_strings(Wynik2, Wynik2_lewy, Wynik2_prawy);
           Str(int_width(Wynik2),tmp);
-                     //Tu jest jakiœ error
+                     //Tu jest jakiÅ› error
           Label2.Caption := Label2.Caption + 'Wynik = (' + Wynik2_lewy + ', ' + Wynik2_prawy + ')' + #10+#13;
-          Label2.Caption := Label2.Caption + 'Szerokoœæ przedzia³u = ' + tmp;
+          Label2.Caption := Label2.Caption + 'SzerokoÅ›Ä‡ przedziaÅ‚u = ' + tmp;
         end
-        else  Label2.Caption := 'Nie mo¿na obliczyæ wartoœci - b³¹d st = ' + IntToStr(st);
+        else  Label2.Caption := 'Nie moÅ¼na obliczyÄ‡ wartoÅ›ci - bÅ‚Ä…d st = ' + IntToStr(st);
     end;
   end;
     inputNumber := inputNumber + 1;
@@ -725,3 +737,4 @@ begin
 
 
 end.
+

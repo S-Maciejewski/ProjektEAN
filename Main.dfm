@@ -2,131 +2,130 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Kalkulator funkcji sklejanych'
-  ClientHeight = 468
-  ClientWidth = 844
-  Color = 16772817
+  ClientHeight = 369
+  ClientWidth = 1003
+  Color = 16436871
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
-  Font.Height = -11
+  Font.Height = -12
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Position = poDesigned
-  Visible = True
   PixelsPerInch = 96
-  TextHeight = 13
+  TextHeight = 14
   object Label1: TLabel
-    Left = 216
-    Top = 51
-    Width = 10
-    Height = 22
+    Left = 72
+    Top = 48
+    Width = 8
+    Height = 17
     Caption = 'n'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -18
+    Font.Height = -14
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
   end
   object Label2: TLabel
-    Left = 127
-    Top = 168
-    Width = 6
-    Height = 22
+    Left = 79
+    Top = 122
+    Width = 4
+    Height = 17
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -18
+    Font.Height = -14
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-  end
-  object Label5: TLabel
-    Left = 323
-    Top = 27
-    Width = 294
-    Height = 22
-    Caption = 'Podaj lewy i prawy kraniec przedzia'#322'u'
-    Font.Charset = DEFAULT_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -18
-    Font.Name = 'Tahoma'
-    Font.Style = []
-    ParentFont = False
-    Visible = False
   end
   object Label3: TLabel
-    Left = 47
-    Top = 168
-    Width = 54
-    Height = 22
-    Caption = 'Wynik:'
+    Left = 27
+    Top = 122
+    Width = 46
+    Height = 17
+    Caption = 'Wyniki:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -18
+    Font.Height = -14
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
   end
   object Label4: TLabel
-    Left = 163
-    Top = 27
-    Width = 120
-    Height = 22
+    Left = 27
+    Top = 25
+    Width = 94
+    Height = 17
     Caption = 'Podaj warto'#347'ci:'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -18
+    Font.Height = -14
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
+    Visible = False
+  end
+  object Label5: TLabel
+    Left = 162
+    Top = 25
+    Width = 222
+    Height = 17
+    Caption = 'Podaj lewy i prawy koniec przedzia'#322'u'
+    Font.Charset = DEFAULT_CHARSET
+    Font.Color = clWindowText
+    Font.Height = -14
+    Font.Name = 'Tahoma'
+    Font.Style = []
+    ParentFont = False
+    Visible = False
+  end
+  object Edit1: TEdit
+    Left = 144
+    Top = 48
+    Width = 121
+    Height = 22
+    TabOrder = 0
+  end
+  object Edit2: TEdit
+    Left = 296
+    Top = 48
+    Width = 121
+    Height = 22
+    TabOrder = 1
+    Visible = False
   end
   object Button1: TButton
-    Left = 680
-    Top = 54
+    Left = 448
+    Top = 46
     Width = 75
     Height = 25
     Caption = 'Dalej'
-    TabOrder = 0
+    TabOrder = 2
     OnClick = Button1Click
   end
-  object Edit1: TEdit
-    Left = 323
-    Top = 55
-    Width = 121
-    Height = 21
-    TabOrder = 1
-  end
   object CheckBox1: TCheckBox
-    Left = 323
-    Top = 82
-    Width = 286
-    Height = 23
+    Left = 144
+    Top = 77
+    Width = 313
+    Height = 17
     Caption = 'Arytmetyka przedzia'#322'owa'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -16
+    Font.Height = -14
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
-    TabOrder = 2
-  end
-  object Edit2: TEdit
-    Left = 496
-    Top = 55
-    Width = 121
-    Height = 21
     TabOrder = 3
-    Visible = False
   end
   object CheckBox2: TCheckBox
-    Left = 323
-    Top = 120
-    Width = 286
+    Left = 144
+    Top = 100
+    Width = 313
     Height = 17
     Caption = 'Obliczanie wsp'#243#322'czynnik'#243'w'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText
-    Font.Height = -16
+    Font.Height = -14
     Font.Name = 'Tahoma'
     Font.Style = []
     ParentFont = False
