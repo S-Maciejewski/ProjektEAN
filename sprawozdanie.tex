@@ -200,9 +200,7 @@ procedure intervalclampedsplinecoeffns (n         : Integer;
 
 var i,k        : Integer;
     u,v,y,z,xi : interval;
-    d          : Ivector;
-    b          : Ivector1;
-    c          : Ivector2;
+    d,b,c      : Ivector;
 begin
 SetLength(b,n);
 SetLength(c,n);
@@ -265,7 +263,7 @@ SetLength(d,n);
                v:=(f[i+1]-u)/z-(2*y+d[i+1])*z/6;
                z:=(d[i+1]-y)/(6*z);
                y:=y/2;
-               a[0,i]:=((-z*xi+y)*xi-v)*xi+u;
+               a2[0,i]:=((-z*xi+y)*xi-v)*xi+u;
                u:=3*z*xi;
                a[1,i]:=(u-2*y)*xi+v;
                a[2,i]:=y-u;
@@ -273,7 +271,6 @@ SetLength(d,n);
              end
          end
 end;
-
 
 function intervalclampedsplinevalue (n            : Integer;
                              x,f          : Ivector;
@@ -284,9 +281,7 @@ var i,k   : Integer;
     u,y,z : interval;
     found : Boolean;
     a     : array [0..3] of interval;
-    d     : Ivector;
-    b     : Ivector1;
-    c     : Ivector2;
+    d,b,c : Ivector;
 begin
 SetLength(b,n);
 SetLength(c,n);
@@ -325,7 +320,10 @@ SetLength(d,n);
                c[i]:=1-b[i];
                d[i]:=6*((f[i+1]-u)/y-(u-f[i-1])/z)/(y+z)
              end;
-           u:=2;
+           //u:=2;
+           u.a:=left_read('2');
+           u.b:=right_read('2');
+           //u:=int_read('2');
            i:=-1;
            y:=d[0]/u;
            d[0]:=y;
@@ -347,8 +345,7 @@ SetLength(d,n);
            i:=-1;
            repeat
              i:=i+1;
-             if (compare_less_or_equal(x[i],xx) and 
-             (compare_less_or_equal(xx,x[i+1])))
+             if (compare_less_or_equal(x[i],xx) and (compare_less_or_equal(xx,x[i+1])))
                then found:=True
            until found;
            y:=x[i+1]-x[i];
@@ -365,6 +362,9 @@ SetLength(d,n);
            intervalclampedsplinevalue:=y
          end
 end;
+
+
+
 \end{lstlisting}
 
 \newpage

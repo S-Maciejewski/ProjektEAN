@@ -2,8 +2,8 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Kalkulator funkcji sklejanych'
-  ClientHeight = 369
-  ClientWidth = 1003
+  ClientHeight = 368
+  ClientWidth = 837
   Color = 16436871
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText

@@ -799,11 +799,9 @@ implementation
   begin
     sa1:=sa;
     if FormatSettings.DecimalSeparator=','
-//    if DecimalSeparator=','   { for older versions of Delphi Pascal }
       then sep:=','
       else sep:='.';
     if (Pos('.', sa1)>0) and (FormatSettings.DecimalSeparator=',')
-//    if (Pos('.', sa1)>0) and (DecimalSeparator=',')   { for older versions }
       then sa1[Pos('.', sa1)]:=',';
     x:=StrToFloat(sa1);
     if Pos('e', sa1)>0
