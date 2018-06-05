@@ -28,15 +28,11 @@ type
   end;
 
   vector = array of Extended;
-//  vector1 = array of Extended;
-//  vector2 = array of Extended;
-//  vector3 = array of Extended;
+
   matrix = array of array of Extended;
 
   Ivector = array of interval;
-//  Ivector1 = array of interval;
-//  Ivector2 = array of interval;
-//  Ivector3 = array of interval;
+
   Imatrix = array of array of interval;
 
 var
@@ -123,8 +119,6 @@ procedure clampedsplinecoeffns (n         : Integer;
 var i,k        : Integer;
     u,v,y,z,xi : Extended;
     d,b,c          : vector;
-//    b          : vector1;
-//    c          : vector2;
 begin
 SetLength(b,n);
 SetLength(c,n);
@@ -204,9 +198,7 @@ procedure intervalclampedsplinecoeffns (n         : Integer;
 
 var i,k        : Integer;
     u,v,y,z,xi : interval;
-    d,b,c          : Ivector;
-//    b          : Ivector1;
-//    c          : Ivector2;
+    d,b,c      : Ivector;
 begin
 SetLength(b,n);
 SetLength(c,n);
@@ -269,7 +261,7 @@ SetLength(d,n);
                v:=(f[i+1]-u)/z-(2*y+d[i+1])*z/6;
                z:=(d[i+1]-y)/(6*z);
                y:=y/2;
-               a[0,i]:=((-z*xi+y)*xi-v)*xi+u;
+               a2[0,i]:=((-z*xi+y)*xi-v)*xi+u;
                u:=3*z*xi;
                a[1,i]:=(u-2*y)*xi+v;
                a[2,i]:=y-u;
@@ -324,8 +316,6 @@ var i,k   : Integer;
     found : Boolean;
     a     : array [0..3] of Extended;
     d,b,c     : vector;
-//    b     : vector1;
-//    c     : vector2;
 begin
 SetLength(b,n);
 SetLength(c,n);
@@ -414,9 +404,7 @@ var i,k   : Integer;
     u,y,z : interval;
     found : Boolean;
     a     : array [0..3] of interval;
-    d,b,c     : Ivector;
-//    b     : Ivector1;
-//    c     : Ivector2;
+    d,b,c : Ivector;
 begin
 SetLength(b,n);
 SetLength(c,n);
@@ -455,9 +443,9 @@ SetLength(d,n);
                c[i]:=1-b[i];
                d[i]:=6*((f[i+1]-u)/y-(u-f[i-1])/z)/(y+z)
              end;
-           //u:=2;
-           u.a:=left_read('2');
-           u.b:=right_read('2');
+           u:=2;
+           //u.a:=left_read('2');
+           //u.b:=right_read('2');
            //u:=int_read('2');
            i:=-1;
            y:=d[0]/u;
@@ -498,9 +486,7 @@ SetLength(d,n);
          end
 end;
 
-{---------------------------------------------------------------------------}
-{---------------------------------------------------------------------------}
-{---------------------------------------------------------------------------}
+
 {---------------------------------------------------------------------------}
 
 procedure TForm1.Button1Click(Sender: TObject);
@@ -695,9 +681,6 @@ begin
               iends_to_strings(a2[i][j], tmp2_lewy, tmp2_prawy);
               Label2.Caption := Label2.Caption + 'a[' + IntToStr(i) + ', ' + IntToStr(j) + '] = (' + tmp2_lewy + ', ' + tmp2_prawy +') '+#10+#13+
               'Szerokość przedziału = ' + StringReplace(FormatFloat('0.000E+00', int_width(a2[i][j])), ',', '.', []) { FloatToStr(int_width(Wynik2)) }+ '  ' + #10+#13;
-              //if i mod 2 = 0 then
-              //  Label2.Caption := Label2.Caption + 'a[' + IntToStr(i) + ', ' + IntToStr(j) + '] = (' + tmp2_lewy + ', ' + tmp2_prawy +')    '
-              //else Label2.Caption := Label2.Caption + 'a[' + IntToStr(i) + ', ' + IntToStr(j) + '] = (' + tmp2_lewy + ', ' + tmp2_prawy +')' + #10+#13
             end;
         Label2.Caption := Label2.Caption + 'st = ' + IntToStr(st);
         end

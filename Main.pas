@@ -1,5 +1,8 @@
 ﻿unit Main;
 
+//{$M 16384,1048576} default
+{$M 16384,8388608}
+
 interface
 
 uses
